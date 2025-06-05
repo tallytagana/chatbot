@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Education Chatbot</title>
+     <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Dialogflow Messenger -->
+  <df-messenger
+  intent="WELCOME"
+  chat-title="ChatAI"
+  agent-id="b825ff89-7e41-42a7-80ed-b849cbc4c6ff"
+  language-code="en">
+</df-messenger>
+
+    <div class="container">
+        <div class="sidebar scrollbar">
+            <div class="logo">
+                <h1>ChatAI</h1>
+                <p>Your AI Learning champ</p>
+            </div>
+            
+            <div class="quick-actions">
+                <h3>Quick Start</h3>
+                <button class="action-btn" onclick="startConversation('Learn about NLP')">Learn about NLP</button>
+                <button class="action-btn" onclick="startConversation('Explore AI Ethics')">Explore AI Ethics</button>
+                <button class="action-btn" onclick="startConversation('Take AI Quiz')">Take AI Quiz</button>
+                <button class="action-btn" onclick="startConversation('AI vs ML vs Deep Learning')">AI vs ML vs DL</button>
+            </div>
+
+            <div class="topics-list">
+                <h3>Topics</h3>
+                <a href="#" class="topic-item" onclick="askQuestion('What is Machine Learning?')">Machine Learning</a>
+                <a href="#" class="topic-item" onclick="askQuestion('What are Neural Networks?')">Neural Networks</a>
+                <a href="#" class="topic-item" onclick="askQuestion('What is Computer Vision?')">Computer Vision</a>
+                <a href="#" class="topic-item" onclick="askQuestion('What are Large Language Models?')">Large Language Models</a>
+                <a href="#" class="topic-item" onclick="askQuestion('AI in Healthcare')">AI in Healthcare</a>
+                <a href="#" class="topic-item" onclick="askQuestion('AI in Finance')">AI in Finance</a>
+                <a href="#" class="topic-item" onclick="askQuestion('Bias in AI')">AI Bias & Ethics</a>
+                <a href="#" class="topic-item" onclick="askQuestion('Privacy in AI')">AI Privacy</a>
+            </div>
+        </div>
+
+        <div class="main-chat">
+            <div class="chat-header">
+                <h2>ChatAI</h2>
+                <p>Ask me anything about Artificial Intelligence, Machine Learning, and more!</p>
+            </div>
+
+            <div class="chat-messages scrollbar" id="chatMessages">
+                <div class="message bot">
+                    <div class="message-avatar">🤖</div>
+                    <div class="message-content">
+                        <p>Hello! I am ChatAI your AI Education Assistant. I'm here to help you learn about Artificial Intelligence, Machine Learning, and related topics.</p>
+                        <p>You can ask me questions about:</p>
+                        <ul style="margin: 10px 0; padding-left: 20px;">
+                            <li>Core AI/ML concepts and terminology</li>
+                            <li>Real-world applications across industries</li>
+                            <li>Ethical considerations in AI</li>
+                            <li>Technical deep-dives into specific topics</li>
+                        </ul>
+                        <p>Try clicking one of the quick start buttons, or ask me anything!</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="typing-indicator" id="typingIndicator">
+                🤖 AI Assistant is typing...
+            </div>
+
+            <div class="chat-input-container">
+                <div class="chat-input">
+                    <input type="text" id="messageInput" placeholder="Ask me about AI, ML, NLP, Ethics, or anything else..." onkeypress="handleKeyPress(event)">
+                    <button class="send-btn" onclick="sendMessage()">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Knowledge base with extensive Q&A pairs
+        const knowledgeBase = {
+            // Core terminology
+            "what is machine learning": {
+                answer: "Machine Learning (ML) is a subset of artificial intelligence that enables computers to learn and make decisions from data without being explicitly programmed for every task. Instead of following pre-written instructions, ML algorithms identify patterns in data and use these patterns to make predictions or decisions about new, unseen data.",
+                followUps: ["How does ML differ from traditional programming?", "What are the types of Machine Learning?", "What are some ML algorithms?"],
+                citations: "Reference: Module 1 - Introduction to AI and ML Fundamentals",
+                diagram: "ml_diagram"
+            },
+            "what is ML": {
+                answer: "Machine Learning (ML) is a subset of artificial intelligence that enables computers to learn and make decisions from data without being explicitly programmed for every task. Instead of following pre-written instructions, ML algorithms identify patterns in data and use these patterns to make predictions or decisions about new, unseen data.",
+                followUps: ["How does ML differ from traditional programming?", "What are the types of Machine Learning?", "What are some ML algorithms?"],
+                citations: "Reference: Module 1 - Introduction to AI and ML Fundamentals",
+                diagram: "ml_diagram"
+            },
+            "what is artificial intelligence": {
+                answer: "Artificial Intelligence (AI) is the simulation of human intelligence in machines that are programmed to think, learn, and problem-solve like humans. AI encompasses various technologies including machine learning, natural language processing, computer vision, and robotics. The goal is to create systems that can perform tasks that typically require human intelligence.",
+                followUps: ["What are the types of AI?", "How is AI different from Machine Learning?", "What are AI applications?"],
+                citations: "Reference: Module 1 - Foundations of Artificial Intelligence",
+                diagram: "ai_hierarchy"
+            },
+            "what is AI": {
+                answer: "Artificial Intelligence (AI) is the simulation of human intelligence in machines that are programmed to think, learn, and problem-solve like humans. AI encompasses various technologies including machine learning, natural language processing, computer vision, and robotics. The goal is to create systems that can perform tasks that typically require human intelligence.",
+                followUps: ["What are the types of AI?", "How is AI different from Machine Learning?", "What are AI applications?"],
+                citations: "Reference: Module 1 - Foundations of Artificial Intelligence",
+                diagram: "ai_hierarchy"
+            },
+            "what is natural language processing": {
+                answer: "Natural Language Processing (NLP) is a branch of AI that focuses on the interaction between computers and human language. It enables machines to understand, interpret, and generate human language in a valuable way. NLP combines computational linguistics with machine learning and deep learning to process and analyze large amounts of natural language data.",
+                followUps: ["What are NLP applications?", "What are NLP challenges?", "How does sentiment analysis work?"],
+                citations: "Reference: Module 2 - NLP and Language Understanding",
+                diagram: "nlp_pipeline"
+            },
+            "what are neural networks": {
+                answer: "Neural Networks are computing systems inspired by biological neural networks in animal brains. They consist of interconnected nodes (neurons) that process information using connectionist approaches. Each connection has a weight that adjusts as learning proceeds, allowing the network to recognize patterns and make predictions. Neural networks are the foundation of deep learning.",
+                followUps: ["How do neural networks learn?", "What are different types of neural networks?", "What is deep learning?"],
+                citations: "Reference: Module 3 - Neural Networks and Deep Learning Architecture",
+                quiz: "neural_networks_quiz"
+            },
+            "what is computer vision": {
+                answer: "Computer Vision is a field of AI that enables machines to interpret and understand visual information from the world, similar to how humans use their eyes and brain to understand their surroundings. It involves acquiring, processing, analyzing, and understanding digital images or videos to extract meaningful information and make decisions based on visual data.",
+                followUps: ["What are computer vision applications?", "How does image recognition work?", "What are computer vision challenges?"],
+                citations: "Reference: Module 2 - Computer Vision and Image Processing"
+            },
+            "what are large language models": {
+                answer: "Large Language Models (LLMs) are advanced AI systems trained on vast amounts of text data to understand and generate human-like text. They use transformer architecture and have billions of parameters that help them perform various language tasks like translation, summarization, question-answering, and creative writing. Examples include GPT, BERT, and PaLM.",
+                followUps: ["How are LLMs trained?", "What can LLMs do?", "What are the limitations of LLMs?"],
+                citations: "Reference: Module 2 - Advanced NLP and Language Models"
+            },
+
+            // AI vs ML vs Deep Learning
+            "ai vs ml vs deep learning": {
+                answer: "AI (Artificial Intelligence) is the broadest concept - it's about making machines smart. ML (Machine Learning) is a subset of AI that learns from data. Deep Learning is a subset of ML that uses neural networks with multiple layers. Think of it as nested circles: AI contains ML, and ML contains Deep Learning. Each level gets more specific and powerful.",
+                followUps: ["Give me examples of each", "Which one should I learn first?", "What are the career opportunities in each?"],
+                citations: "Reference: Module 1 - AI Hierarchy and Relationships",
+                diagram: "ai_ml_dl_venn"
+            },
+
+            // Applications
+            "ai in healthcare": {
+                answer: "AI is revolutionizing healthcare through medical imaging analysis, drug discovery, personalized treatment plans, predictive analytics for patient outcomes, robotic surgery assistance, and virtual health assistants. AI can detect diseases earlier, reduce medical errors, and provide 24/7 patient monitoring. Examples include AI diagnosing skin cancer from photos and predicting patient deterioration in ICUs.",
+                followUps: ["What are the challenges of AI in healthcare?", "How does AI help in drug discovery?", "What are the ethical considerations?"],
+                citations: "Reference: Module 4 - AI Applications in Healthcare"
+            },
+            "ai in finance": {
+                answer: "AI transforms finance through algorithmic trading, fraud detection, credit scoring, robo-advisors for investment management, risk assessment, and customer service chatbots. AI can process vast amounts of financial data in real-time, identify suspicious transactions, and provide personalized financial advice. High-frequency trading and automated loan approvals are common applications.",
+                followUps: ["How does AI detect fraud?", "What are robo-advisors?", "What are the risks of AI in finance?"],
+                citations: "Reference: Module 4 - AI in Financial Services"
+            },
+
+            // Ethics
+            "bias in ai": {
+                answer: "AI bias occurs when AI systems produce unfair or discriminatory results due to biased training data, algorithmic design choices, or societal prejudices embedded in the development process. This can lead to discrimination in hiring, lending, criminal justice, and healthcare. Common types include historical bias, representation bias, and evaluation bias. Addressing bias requires diverse teams, careful data curation, and ongoing monitoring.",
+                followUps: ["How can we reduce AI bias?", "What are examples of AI bias?", "What is algorithmic fairness?"],
+                citations: "Reference: Module 4 - Ethics and Bias in AI Systems"
+            },
+            "privacy in ai": {
+                answer: "AI privacy concerns involve how personal data is collected, stored, and used by AI systems. Key issues include data consent, data minimization, anonymization techniques, and the right to explanation. Privacy-preserving techniques like differential privacy, federated learning, and homomorphic encryption help protect user data while still enabling AI development.",
+                followUps: ["What is differential privacy?", "How does federated learning protect privacy?", "What are privacy regulations for AI?"],
+                citations: "Reference: Module 4 - Privacy and Data Protection in AI"
+            },
+
+            // Technical deep dives
+            "how do neural networks learn": {
+                answer: "Neural networks learn through a process called backpropagation combined with gradient descent. During training, the network makes predictions, compares them to actual answers, calculates the error, and then adjusts the weights of connections to reduce this error. This process repeats thousands of times until the network can make accurate predictions on new data.",
+                followUps: ["What is gradient descent?", "What are activation functions?", "How do you prevent overfitting?"],
+                citations: "Reference: Module 3 - Neural Network Training Mechanisms"
+            },
+            "what are the types of machine learning": {
+                answer: "There are three main types of Machine Learning: 1) Supervised Learning - learns from labeled examples (classification and regression), 2) Unsupervised Learning - finds patterns in unlabeled data (clustering and dimensionality reduction), and 3) Reinforcement Learning - learns through trial and error with rewards and penalties. Each type solves different kinds of problems.",
+                followUps: ["Give examples of supervised learning", "What is reinforcement learning used for?", "What is semi-supervised learning?"],
+                citations: "Reference: Module 1 - Types of Machine Learning Paradigms"
+            },
+
+            // Conversation flows
+            "learn about nlp": {
+                answer: "Natural Language Processing (NLP) is one of the most exciting areas of AI! It's what allows machines to understand and work with human language. From the chatbots you interact with to language translation services, NLP is everywhere in our daily lives.",
+                followUps: ["What are NLP applications?", "What are NLP challenges?", "How does sentiment analysis work?"],
+                citations: "Reference: Module 2 - Introduction to NLP",
+                diagram: "nlp_pipeline"
+            },
+            "explore ai ethics": {
+                answer: "AI Ethics is crucial as AI systems become more prevalent in society. It involves ensuring AI is developed and deployed responsibly, fairly, and transparently. Key areas include preventing bias, protecting privacy, ensuring accountability, and maintaining human oversight in AI decision-making processes.",
+                followUps: ["What is bias in AI?", "How do we ensure AI privacy?", "What is explainable AI?"],
+                citations: "Reference: Module 4 - Foundations of AI Ethics"
+            }
+        };
+
+        // Follow-up responses
+        const followUpResponses = {
+            "What are NLP applications?": {
+                answer: "NLP has numerous real-world applications: 1) Machine Translation (Google Translate), 2) Sentiment Analysis for social media monitoring, 3) Chatbots and Virtual Assistants (Siri, Alexa), 4) Text Summarization for news and documents, 5) Speech Recognition and Synthesis, 6) Information Extraction from documents, and 7) Content Recommendation systems. These applications are transforming how we interact with technology.",
+                followUps: ["How does machine translation work?", "What is sentiment analysis?", "What are NLP challenges?"],
+                citations: "Reference: Module 2 - NLP Applications and Use Cases"
+            },
+            "What are NLP challenges?": {
+                answer: "NLP faces several significant challenges: 1) Ambiguity in language (words with multiple meanings), 2) Context understanding (sarcasm, idioms), 3) Cultural and linguistic diversity, 4) Handling informal language and slang, 5) Real-time processing requirements, 6) Bias in language models, and 7) Privacy concerns with text data. These challenges require ongoing research and careful system design.",
+                followUps: ["How do we handle language ambiguity?", "What is context in NLP?", "How do we reduce NLP bias?"],
+                citations: "Reference: Module 2 - NLP Challenges and Limitations"
+            },
+            "How does sentiment analysis work?": {
+                answer: "Sentiment Analysis determines the emotional tone of text (positive, negative, neutral). It works by: 1) Preprocessing text (cleaning, tokenization), 2) Feature extraction (bag-of-words, TF-IDF, or word embeddings), 3) Classification using ML models (Naive Bayes, SVM, or deep learning), 4) Scoring sentiment polarity and intensity. Modern approaches use transformer models like BERT for better context understanding.",
+                followUps: ["What are the challenges in sentiment analysis?", "How accurate is sentiment analysis?", "What are sentiment analysis applications?"],
+                citations: "Reference: Module 2 - Sentiment Analysis Techniques"
+            },
+            "What is bias in AI?": {
+                answer: "AI bias occurs when systems unfairly favor certain groups over others. Types include: 1) Historical bias from biased training data, 2) Representation bias when some groups are underrepresented, 3) Evaluation bias using inappropriate metrics, 4) Aggregation bias assuming one model fits all groups. This can lead to discrimination in hiring, lending, law enforcement, and healthcare decisions.",
+                followUps: ["How can we detect AI bias?", "What are bias mitigation techniques?", "What are real examples of AI bias?"],
+                citations: "Reference: Module 4 - Understanding and Identifying AI Bias"
+            },
+            "How do we ensure AI privacy?": {
+                answer: "AI privacy protection involves multiple strategies: 1) Data minimization (collect only necessary data), 2) Differential privacy (adding noise to protect individuals), 3) Federated learning (training without centralizing data), 4) Homomorphic encryption (computation on encrypted data), 5) Data anonymization techniques, 6) Clear consent mechanisms, and 7) Regular privacy audits. The goal is enabling AI benefits while protecting personal information.",
+                followUps: ["What is differential privacy?", "How does federated learning work?", "What are privacy regulations?"],
+                citations: "Reference: Module 4 - Privacy-Preserving AI Techniques"
+            }
+        };
+
+        // Current conversation context
+        let conversationContext = {
+            currentTopic: null,
+            followUpCount: 0,
+            maxFollowUps: 3
+        };
+
+        // Initialize chat
+        function initializeChat() {
+            // Add welcome message with interactive elements
+            setTimeout(() => {
+                showTypingIndicator();
+                setTimeout(() => {
+                    hideTypingIndicator();
+                    // Welcome message is already in HTML
+                }, 1000);
+            }, 500);
+        }
+
+        function startConversation(topic) {
+            const input = document.getElementById('messageInput');
+            input.value = topic;
+            sendMessage();
+        }
+
+        function askQuestion(question) {
+            const input = document.getElementById('messageInput');
+            input.value = question;
+            sendMessage();
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // Add user message
+            addMessage(message, 'user');
+            input.value = '';
+            
+            // Show typing indicator
+            showTypingIndicator();
+            
+            // Process message
+            setTimeout(() => {
+                hideTypingIndicator();
+                processMessage(message);
+            }, 1500);
+        }
+
+        function processMessage(message) {
+            const lowerMessage = message.toLowerCase();
+            let response = null;
+            
+            // Check follow-up responses first
+            if (followUpResponses[message]) {
+                response = followUpResponses[message];
+                conversationContext.followUpCount++;
+            }
+            // Check main knowledge base
+            else {
+                for (const key in knowledgeBase) {
+                    if (lowerMessage.includes(key) || message === key) {
+                        response = knowledgeBase[key];
+                        conversationContext.currentTopic = key;
+                        conversationContext.followUpCount = 0;
+                        break;
+                    }
+                }
+            }
+            
+            if (response) {
+                generateBotResponse(response, message);
+            } else {
+                generateErrorResponse(message);
+            }
+        }
+
+        function generateBotResponse(response, originalMessage) {
+            let messageContent = `<p>${response.answer}</p>`;
+            
+            // Add citations
+            if (response.citations) {
+                messageContent += `<div class="citation">${response.citations}</div>`;
+            }
+            
+            // Add learning path recommendations
+            if (originalMessage.toLowerCase().includes('learn') || originalMessage.toLowerCase().includes('career')) {
+                messageContent += generateLearningPath(originalMessage);
+            }
+            
+            // Add diagrams
+            if (response.diagram) {
+                messageContent += generateDiagram(response.diagram);
+            }
+            
+            // Add quiz
+            if (response.quiz) {
+                messageContent += generateQuiz(response.quiz);
+            }
+            
+            addMessage(messageContent, 'bot', response.followUps);
+        }
+
+        function generateErrorResponse(message) {
+            const errorResponses = [
+                "I don't have specific information about that topic yet. Could you try asking about Machine Learning, Neural Networks, NLP, Computer Vision, or AI Ethics?",
+                "That's an interesting question! While I don't have that exact information, I can help you with AI fundamentals, applications, or ethical considerations.",
+                "I'm not sure about that specific topic. Would you like to explore some core AI concepts instead? Try asking about supervised learning, deep learning, or AI bias.",
+                "I don't understand that question fully. Let me suggest some topics I can help with: AI vs ML differences, real-world AI applications, or AI privacy concerns."
+            ];
+            
+            const randomResponse = errorResponses[Math.floor(Math.random() * errorResponses.length)];
+            const suggestedQuestions = [
+                "What is Machine Learning?",
+                "Learn about NLP",
+                "AI vs ML vs Deep Learning",
+                "Explore AI Ethics"
+            ];
+            
+            addMessage(randomResponse, 'bot', suggestedQuestions);
+        }
+
+        function generateLearningPath(topic) {
+    const learningPaths = {
+        "machine learning": {
+            title: "Recommended Learning Path - Machine Learning",
+            modules: [
+                "Module 1: Introduction to Machine Learning",
+                "Module 2: Regression and Classification Techniques",
+                "Module 3: Neural Networks and Deep Learning",
+                "Module 4: Structuring ML Projects and Improving Performance",
+                "Module 5: Machine Learning Case Studies"
+            ]
+        },
+        "nlp": {
+            title: "Recommended Learning Path - Natural Language Processing",
+            modules: [
+                "Module 1: Natural Language Processing with Classification and Vector Spaces",
+                "Module 2: Probabilistic Models and Sequence Tagging",
+                "Module 3: Word Embeddings and Similarity",
+                "Module 4: Transformers and Attention Mechanisms",
+                "Module 5: NLP in Practice: Chatbots and Question Answering"
+            ]
+        },
+        "ai ethics": {
+            title: "Recommended Learning Path - AI Ethics",
+            modules: [
+                "Module 1: Ethical Considerations in AI Development",
+                "Module 2: Fairness, Accountability, and Transparency",
+                "Module 3: Privacy, Consent, and Data Rights",
+                "Module 4: Bias in AI and Mitigation Strategies",
+                "Module 5: Global AI Policy and Governance"
+            ]
+        },
+        "default": {
+            title: "Recommended Learning Path - AI Fundamentals",
+            modules: [
+                "Module 1: What is Artificial Intelligence?",
+                "Module 2: Introduction to Machine Learning",
+                "Module 3: Deep Learning and Neural Networks",
+                "Module 4: Applications of AI and Real-world Use Cases",
+                "Module 5: Responsible AI and the Future of Work"
+            ]
+        }
+    };
+            
+            const topicKey = Object.keys(learningPaths).find(key => 
+                topic.toLowerCase().includes(key)) || 'default';
+            const path = learningPaths[topicKey];
+            
+            return `
+                <div class="learning-path">
+                    <h4>${path.title}</h4>
+                    <ul>
+                        ${path.modules.map(module => `<li>${module}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+        }
+
+        function generateDiagram(diagramType) {
+            const diagrams = {
+                "ai_hierarchy": `
+                    <div class="diagram">
+                        <h4>AI Hierarchy</h4>
+                        <svg class="svg-diagram" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <linearGradient id="aiGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#64ffda;stop-opacity:0.8" />
+                                    <stop offset="100%" style="stop-color:#00d4aa;stop-opacity:0.8" />
+                                </linearGradient>
+                            </defs>
+                            <ellipse cx="200" cy="150" rx="180" ry="120" fill="url(#aiGrad)" stroke="#64ffda" stroke-width="2"/>
+                            <ellipse cx="200" cy="150" rx="130" ry="80" fill="rgba(100,255,218,0.4)" stroke="#64ffda" stroke-width="2"/>
+                            <ellipse cx="200" cy="150" rx="80" ry="50" fill="rgba(100,255,218,0.2)" stroke="#64ffda" stroke-width="2"/>
+                            <text x="200" y="80" text-anchor="middle" fill="#0a192f" font-weight="bold" font-size="16">Artificial Intelligence</text>
+                            <text x="200" y="120" text-anchor="middle" fill="#0a192f" font-weight="bold" font-size="14">Machine Learning</text>
+                            <text x="200" y="160" text-anchor="middle" fill="#0a192f" font-weight="bold" font-size="12">Deep Learning</text>
+                        </svg>
+                    </div>
+                `,
+                "ml_diagram": `
+                    <div class="diagram">
+                        <h4>Machine Learning Process</h4>
+                        <svg class="svg-diagram" viewBox="0 0 500 200" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <linearGradient id="processGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" style="stop-color:#64ffda;stop-opacity:0.8" />
+                                    <stop offset="100%" style="stop-color:#00d4aa;stop-opacity:0.8" />
+                                </linearGradient>
+                            </defs>
+                            <rect x="20" y="80" width="80" height="40" fill="url(#processGrad)" stroke="#64ffda" rx="5"/>
+                            <text x="60" y="105" text-anchor="middle" fill="#0a192f" font-weight="bold" font-size="12">Data</text>
+                            
+                            <rect x="140" y="80" width="80" height="40" fill="url(#processGrad)" stroke="#64ffda" rx="5"/>
+                            <text x="180" y="105" text-anchor="middle" fill="#0a192f" font-weight="bold" font-size="12">Algorithm</text>
+                            
+                            <rect x="260" y="80" width="80" height="40" fill="url(#processGrad)" stroke="#64ffda" rx="5"/>
+                            <text x="300" y="105" text-anchor="middle" fill="#0a192f" font-weight="bold" font-size="12">Model</text>
+                            
+                            <rect x="380" y="80" width="80" height="40" fill="url(#processGrad)" stroke="#64ffda" rx="5"/>
+                            <text x="420" y="105" text-anchor="middle" fill="#0a192f" font-weight="bold" font-size="12">Prediction</text>
+                            
+                            <path d="M 100 100 L 130 100" stroke="#64ffda" stroke-width="3" marker-end="url(#arrowhead)"/>
+                            <path d="M 220 100 L 250 100" stroke="#64ffda" stroke-width="3" marker-end="url(#arrowhead)"/>
+                            <path d="M 340 100 L 370 100" stroke="#64ffda" stroke-width="3" marker-end="url(#arrowhead)"/>
+                            
+                            <defs>
+                                <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                    <polygon points="0 0, 10 3.5, 0 7" fill="#64ffda"/>
+                                </marker>
+                            </defs>
+                        </svg>
+                    </div>
+                `,
+                "nlp_pipeline": `
+                    <div class="diagram">
+                        <h4>NLP Processing Pipeline</h4>
+                        <svg class="svg-diagram" viewBox="0 0 600 250" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <linearGradient id="nlpGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" style="stop-color:#64ffda;stop-opacity:0.8" />
+                                    <stop offset="100%" style="stop-color:#00d4aa;stop-opacity:0.8" />
+                                </linearGradient>
+                            </defs>
+                            
+                            <rect x="20" y="100" width="80" height="50" fill="url(#nlpGrad)" stroke="#64ffda" rx="5"/>
+                            <text x="60" y="120" text-anchor="middle" fill="#0a192f" font-weight="bold" font-size="10">Raw Text</text>
+                            <text x="60" y="135" text-anchor="middle" fill="#0a192f" font-size="8">Input</text>
+                            
+                            <rect x="130" y="100" width="80" height="50" fill="url(#nlpGrad)" stroke="#64ffda" rx="5"/>
+                            <text x="170" y="120" text-anchor="middle" fill="#0a192f" font-weight="bold" font-size="10">Tokenize</text>
+                            <text x="170" y="135" text-anchor="middle" fill="#0a192f" font-size="8">Split Words</text>
+                            
+                            <rect x="240" y="100" width="80" height="50" fill="url(#nlpGrad)" stroke="#64ffda" rx="5"/>
+                            <text x="280" y="120" text-anchor="middle" fill="#0a192f" font-weight="bold" font-size="10">Process</text>
+                            <text x="280" y="135" text-anchor="middle" fill="#0a192f" font-size="8">Clean & Tag</text>
+                            
+                            <rect x="350" y="100" width="80" height="50" fill="url(#nlpGrad)" stroke="#64ffda" rx="5"/>
+                            <text x="390" y="120" text-anchor="middle" fill="#0a192f" font-weight="bold" font-size="10">Analyze</text>
+                            <text x="390" y="135" text-anchor="middle" fill="#0a192f" font-size="8">Extract Meaning</text>
+                            
+                            <rect x="460" y="100" width="80" height="50" fill="url(#nlpGrad)" stroke="#64ffda" rx="5"/>
+                            <text x="500" y="120" text-anchor="middle" fill="#0a192f" font-weight="bold" font-size="10">Output</text>
+                            <text x="500" y="135" text-anchor="middle" fill="#0a192f" font-size="8">Results</text>
+                            
+                            <path d="M 100 125 L 125 125" stroke="#64ffda" stroke-width="3" marker-end="url(#arrowhead2)"/>
+                            <path d="M 210 125 L 235 125" stroke="#64ffda" stroke-width="3" marker-end="url(#arrowhead2)"/>
+                            <path d="M 320 125 L 345 125" stroke="#64ffda" stroke-width="3" marker-end="url(#arrowhead2)"/>
+                            <path d="M 430 125 L 455 125" stroke="#64ffda" stroke-width="3" marker-end="url(#arrowhead2)"/>
+                            
+                            <defs>
+                                <marker id="arrowhead2" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                    <polygon points="0 0, 10 3.5, 0 7" fill="#64ffda"/>
+                                </marker>
+                            </defs>
+                        </svg>
+                    </div>
+                `,
+                "ai_ml_dl_venn": `
+                    <div class="diagram">
+                        <h4>AI vs ML vs Deep Learning</h4>
+                        <svg class="svg-diagram" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <linearGradient id="vennGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#64ffda;stop-opacity:0.6" />
+                                    <stop offset="100%" style="stop-color:#00d4aa;stop-opacity:0.6" />
+                                </linearGradient>
+                                <linearGradient id="vennGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#667eea;stop-opacity:0.6" />
+                                    <stop offset="100%" style="stop-color:#764ba2;stop-opacity:0.6" />
+                                </linearGradient>
+                                <linearGradient id="vennGrad3" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#f093fb;stop-opacity:0.6" />
+                                    <stop offset="100%" style="stop-color:#f5576c;stop-opacity:0.6" />
+                                </linearGradient>
+                            </defs>
+                            
+                            <circle cx="150" cy="120" r="80" fill="url(#vennGrad1)" stroke="#64ffda" stroke-width="2"/>
+                            <circle cx="250" cy="120" r="60" fill="url(#vennGrad2)" stroke="#667eea" stroke-width="2"/>
+                            <circle cx="200" cy="180" r="40" fill="url(#vennGrad3)" stroke="#f5576c" stroke-width="2"/>
+                            
+                            <text x="100" y="90" text-anchor="middle" fill="#e0e6ed" font-weight="bold" font-size="14">AI</text>
+                            <text x="280" y="90" text-anchor="middle" fill="#e0e6ed" font-weight="bold" font-size="14">ML</text>
+                            <text x="200" y="220" text-anchor="middle" fill="#e0e6ed" font-weight="bold" font-size="12">DL</text>
+                            
+                            <text x="200" y="50" text-anchor="middle" fill="#64ffda" font-weight="bold" font-size="16">Relationship Overview</text>
+                        </svg>
+                        <p style="color: #ccd6f6; font-size: 12px; margin-top: 10px;">
+                            AI encompasses all intelligent systems, ML is AI that learns from data, and Deep Learning uses neural networks with multiple layers.
+                        </p>
+                    </div>
+                `
+            };
+            
+            return diagrams[diagramType] || '';
+        }
+
+        function generateQuiz(quizType) {
+            const quizzes = {
+                "neural_networks_quiz": {
+                    question: "Quick Quiz: What is the main learning mechanism in neural networks?",
+                    options: [
+                        "Forward propagation",
+                        "Backpropagation",
+                        "Random search",
+                        "Linear regression"
+                    ],
+                    correctAnswer: 1,
+                    explanation: "Backpropagation is the key learning algorithm that adjusts weights by propagating errors backward through the network."
+                },
+                "ai_basics_quiz": {
+                    question: "Which of the following is NOT a type of Machine Learning?",
+                    options: [
+                        "Supervised Learning",
+                        "Unsupervised Learning",
+                        "Reinforcement Learning",
+                        "Deterministic Learning"
+                    ],
+                    correctAnswer: 3,
+                    explanation: "Deterministic Learning is not a recognized type of ML. The three main types are Supervised, Unsupervised, and Reinforcement Learning."
+                }
+            };
+            
+            const quiz = quizzes[quizType];
+            if (!quiz) return '';
+            
+            return `
+                <div class="quiz-container" id="quiz-${Date.now()}">
+                    <div class="quiz-question">${quiz.question}</div>
+                    ${quiz.options.map((option, index) => 
+                        `<div class="quiz-option" onclick="selectQuizOption(this, ${index}, ${quiz.correctAnswer}, '${quiz.explanation}')">${option}</div>`
+                    ).join('')}
+                </div>
+            `;
+        }
+
+        function selectQuizOption(element, selectedIndex, correctIndex, explanation) {
+            const container = element.parentElement;
+            const options = container.querySelectorAll('.quiz-option');
+            
+            // Disable all options
+            options.forEach((option, index) => {
+                option.style.pointerEvents = 'none';
+                if (index === correctIndex) {
+                    option.classList.add('correct');
+                } else if (index === selectedIndex && index !== correctIndex) {
+                    option.classList.add('incorrect');
+                }
+            });
+            
+            // Add explanation
+            setTimeout(() => {
+                const explanationDiv = document.createElement('div');
+                explanationDiv.innerHTML = `<p style="margin-top: 15px; padding: 10px; background: rgba(100, 255, 218, 0.1); border-radius: 5px; color: #ccd6f6;"><strong>Explanation:</strong> ${explanation}</p>`;
+                container.appendChild(explanationDiv);
+            }, 1000);
+        }
+
+        function addMessage(content, sender, followUps = []) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            
+            const avatar = sender === 'user' ? '👤' : '🤖';
+            
+            let followUpButtons = '';
+            if (followUps.length > 0 && conversationContext.followUpCount < conversationContext.maxFollowUps) {
+                followUpButtons = `
+                    <div class="follow-up-buttons">
+                        ${followUps.map(followUp => 
+                            `<span class="follow-up-btn" onclick="askFollowUp('${followUp}')">${followUp}</span>`
+                        ).join('')}
+                    </div>
+                `;
+            }
+            
+            messageDiv.innerHTML = `
+                <div class="message-avatar">${avatar}</div>
+                <div class="message-content">
+                    ${content}
+                    ${followUpButtons}
+                </div>
+            `;
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function askFollowUp(question) {
+            const input = document.getElementById('messageInput');
+            input.value = question;
+            sendMessage();
+        }
+
+        function showTypingIndicator() {
+            document.getElementById('typingIndicator').style.display = 'block';
+        }
+
+        function hideTypingIndicator() {
+            document.getElementById('typingIndicator').style.display = 'none';
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        // Special quiz trigger
+        function startQuiz() {
+            const quizQuestions = [
+                {
+                    question: "What does 'AI' stand for?",
+                    options: ["Automatic Intelligence", "Artificial Intelligence", "Advanced Intelligence", "Automated Intelligence"],
+                    correct: 1
+                },
+                {
+                    question: "Which is a subset of AI?",
+                    options: ["Machine Learning", "Computer Vision", "Natural Language Processing", "All of the above"],
+                    correct: 3
+                },
+                {
+                    question: "What type of learning uses labeled data?",
+                    options: ["Unsupervised Learning", "Reinforcement Learning", "Supervised Learning", "Deep Learning"],
+                    correct: 2
+                }
+            ];
+            
+            let quizContent = "<h4>🧠 AI Knowledge Quiz</h4><p>Test your understanding of AI concepts!</p>";
+            
+            quizQuestions.forEach((q, qIndex) => {
+                quizContent += `
+                    <div class="quiz-container" style="margin: 15px 0;">
+                        <div class="quiz-question">Question ${qIndex + 1}: ${q.question}</div>
+                        ${q.options.map((option, oIndex) => 
+                            `<div class="quiz-option" onclick="selectQuizOption(this, ${oIndex}, ${q.correct}, 'Question ${qIndex + 1} completed!')">${option}</div>`
+                        ).join('')}
+                    </div>
+                `;
+            });
+            
+            addMessage(quizContent, 'bot', ["Explain supervised learning", "What is deep learning?", "Learn about NLP"]);
+        }
+
+        // Enhanced conversation triggers
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeChat();
+            
+            // Add special trigger for quiz
+            const originalProcessMessage = processMessage;
+            processMessage = function(message) {
+                if (message.toLowerCase().includes('take ai quiz') || message.toLowerCase().includes('quiz')) {
+                    startQuiz();
+                    return;
+                }
+                originalProcessMessage(message);
+            };
+        });
+
+        // Cross-linking functionality
+        function addCrossLinks(content) {
+            const links = {
+                'neural networks': 'What are neural networks?',
+                'deep learning': 'What is deep learning?',
+                'machine learning': 'What is machine learning?',
+                'nlp': 'What is natural language processing?',
+                'computer vision': 'What is computer vision?'
+            };
+            
+            let linkedContent = content;
+            for (const [term, question] of Object.entries(links)) {
+                const regex = new RegExp(`\\b${term}\\b`, 'gi');
+                linkedContent = linkedContent.replace(regex, 
+                    `<span style="color: #64ffda; cursor: pointer; text-decoration: underline;" onclick="askQuestion('${question}')">${term}</span>`
+                );
+            }
+            
+            return linkedContent;
+        }
+
+        // Enhanced error handling with suggestions
+        function generateSmartSuggestions(message) {
+            const keywordSuggestions = {
+                'learn': ['Learn about NLP', 'What is Machine Learning?', 'AI vs ML vs Deep Learning'],
+                'application': ['AI in Healthcare', 'AI in Finance', 'Computer Vision applications'],
+                'ethics': ['Explore AI Ethics', 'Bias in AI', 'Privacy in AI'],
+                'algorithm': ['What are Neural Networks?', 'Types of Machine Learning', 'How do neural networks learn?'],
+                'data': ['What is Machine Learning?', 'Privacy in AI', 'Bias in AI']
+            };
+            
+            const lowerMessage = message.toLowerCase();
+            for (const [keyword, suggestions] of Object.entries(keywordSuggestions)) {
+                if (lowerMessage.includes(keyword)) {
+                    return suggestions;
+                }
+            }
+            
+            return ['What is AI?', 'Learn about NLP', 'Explore AI Ethics', 'Take AI Quiz'];
+        }
+    </script>
+    <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
+</body>
+</html>
