@@ -86,7 +86,7 @@
             // Core terminology
             "what is machine learning": {
                 answer: "Machine Learning (ML) is a subset of artificial intelligence that enables computers to learn and make decisions from data without being explicitly programmed for every task. Instead of following pre-written instructions, ML algorithms identify patterns in data and use these patterns to make predictions or decisions about new, unseen data.",
-                followUps: ["How does ML differ from traditional programming?", "What are the types of Machine Learning?", "What are some ML algorithms?"],
+                followUps: ["What are the types of Machine Learning?"],
                 citations: "Reference: Module 1 - Introduction to AI and ML Fundamentals",
                 diagram: "ml_diagram"
             },
@@ -116,13 +116,13 @@
             },
             "what are neural networks": {
                 answer: "Neural Networks are computing systems inspired by biological neural networks in animal brains. They consist of interconnected nodes (neurons) that process information using connectionist approaches. Each connection has a weight that adjusts as learning proceeds, allowing the network to recognize patterns and make predictions. Neural networks are the foundation of deep learning.",
-                followUps: ["How do neural networks learn?", "What are different types of neural networks?", "What is deep learning?"],
+                followUps: ["How do neural networks learn?", "What is deep learning?"],
                 citations: "Reference: Module 3 - Neural Networks and Deep Learning Architecture",
                 quiz: "neural_networks_quiz"
             },
             "what is computer vision": {
                 answer: "Computer Vision is a field of AI that enables machines to interpret and understand visual information from the world, similar to how humans use their eyes and brain to understand their surroundings. It involves acquiring, processing, analyzing, and understanding digital images or videos to extract meaningful information and make decisions based on visual data.",
-                followUps: ["What are computer vision applications?", "How does image recognition work?", "What are computer vision challenges?"],
+               
                 citations: "Reference: Module 2 - Computer Vision and Image Processing"
             },
             "what are large language models": {
@@ -138,17 +138,20 @@
                 citations: "Reference: Module 1 - AI Hierarchy and Relationships",
                 diagram: "ai_ml_dl_venn"
             },
+            "what is deep learning": {
+                answer: " Deep learningDeep Learning is a type of machine learning that teaches computers to learn and make decisions similar to how the human brain works — by using something called artificial neural networks. is the broadest concept - it's about making machines smart. ML (Machine Learning) is a subset of AI that learns from data. Deep Learning is a subset of ML that uses neural networks with multiple layers. Think of it as nested circles: AI contains ML, and ML contains Deep Learning. Each level gets more specific and powerful.",
+                
+            },
 
             // Applications
             "ai in healthcare": {
                 answer: "AI is revolutionizing healthcare through medical imaging analysis, drug discovery, personalized treatment plans, predictive analytics for patient outcomes, robotic surgery assistance, and virtual health assistants. AI can detect diseases earlier, reduce medical errors, and provide 24/7 patient monitoring. Examples include AI diagnosing skin cancer from photos and predicting patient deterioration in ICUs.",
-                followUps: ["What are the challenges of AI in healthcare?", "How does AI help in drug discovery?", "What are the ethical considerations?"],
+                followUps: ["What are the challenges of AI in healthcare?"],
                 citations: "Reference: Module 4 - AI Applications in Healthcare"
             },
             "ai in finance": {
                 answer: "AI transforms finance through algorithmic trading, fraud detection, credit scoring, robo-advisors for investment management, risk assessment, and customer service chatbots. AI can process vast amounts of financial data in real-time, identify suspicious transactions, and provide personalized financial advice. High-frequency trading and automated loan approvals are common applications.",
-                followUps: ["How does AI detect fraud?", "What are robo-advisors?", "What are the risks of AI in finance?"],
-                citations: "Reference: Module 4 - AI in Financial Services"
+                
             },
 
             // Ethics
@@ -166,19 +169,22 @@
             // Technical deep dives
             "how do neural networks learn": {
                 answer: "Neural networks learn through a process called backpropagation combined with gradient descent. During training, the network makes predictions, compares them to actual answers, calculates the error, and then adjusts the weights of connections to reduce this error. This process repeats thousands of times until the network can make accurate predictions on new data.",
-                followUps: ["What is gradient descent?", "What are activation functions?", "How do you prevent overfitting?"],
+               
                 citations: "Reference: Module 3 - Neural Network Training Mechanisms"
             },
             "what are the types of machine learning": {
                 answer: "There are three main types of Machine Learning: 1) Supervised Learning - learns from labeled examples (classification and regression), 2) Unsupervised Learning - finds patterns in unlabeled data (clustering and dimensionality reduction), and 3) Reinforcement Learning - learns through trial and error with rewards and penalties. Each type solves different kinds of problems.",
-                followUps: ["Give examples of supervised learning", "What is reinforcement learning used for?", "What is semi-supervised learning?"],
+                followUps: ["Give examples of supervised learning"],
                 citations: "Reference: Module 1 - Types of Machine Learning Paradigms"
+            },
+            "Give examples of supervised learning":{
+                answer:"There are various examples of supervised learning: 1) Image recognition-Identifies objects in images, 2) Email spam detection- Classifies emails as spam or not spam, 3) Voice recognition- classifies spoken words or phrases."
             },
 
             // Conversation flows
             "learn about nlp": {
                 answer: "Natural Language Processing (NLP) is one of the most exciting areas of AI! It's what allows machines to understand and work with human language. From the chatbots you interact with to language translation services, NLP is everywhere in our daily lives.",
-                followUps: ["What are NLP applications?", "What are NLP challenges?", "How does sentiment analysis work?"],
+                followUps: ["What are NLP applications?", "What are NLP challenges?", "what is sentiment analysis?"],
                 citations: "Reference: Module 2 - Introduction to NLP",
                 diagram: "nlp_pipeline"
             },
@@ -193,15 +199,28 @@
         const followUpResponses = {
             "What are NLP applications?": {
                 answer: "NLP has numerous real-world applications: 1) Machine Translation (Google Translate), 2) Sentiment Analysis for social media monitoring, 3) Chatbots and Virtual Assistants (Siri, Alexa), 4) Text Summarization for news and documents, 5) Speech Recognition and Synthesis, 6) Information Extraction from documents, and 7) Content Recommendation systems. These applications are transforming how we interact with technology.",
-                followUps: ["How does machine translation work?", "What is sentiment analysis?", "What are NLP challenges?"],
+                followUps: ["What is sentiment analysis?", "What are NLP challenges?"],
                 citations: "Reference: Module 2 - NLP Applications and Use Cases"
             },
             "What are NLP challenges?": {
                 answer: "NLP faces several significant challenges: 1) Ambiguity in language (words with multiple meanings), 2) Context understanding (sarcasm, idioms), 3) Cultural and linguistic diversity, 4) Handling informal language and slang, 5) Real-time processing requirements, 6) Bias in language models, and 7) Privacy concerns with text data. These challenges require ongoing research and careful system design.",
-                followUps: ["How do we handle language ambiguity?", "What is context in NLP?", "How do we reduce NLP bias?"],
+                followUps: ["How do we handle language ambiguity?" ],
                 citations: "Reference: Module 2 - NLP Challenges and Limitations"
             },
-            "How does sentiment analysis work?": {
+            "How do we handle language ambiguity?": {
+                answer: "How AIs handle language ambiguity: 1) Pre-trained language models (Large models like GPT are trained on billions of sentences), 2) Context understanding (AI uses the surrounding words (context) to figure out the meaning.), 3) Word Embedding, 4) Part of speech tagging, 5) Dialog and feedback loop ",
+                followUps: [ "What is context in NLP?", "How do we reduce NLP bias?"],
+            },
+             "What is context in NLP": {
+                answer: "In NLP, context refers to the surrounding information (words, sentences, or even previous conversations) that helps determine the true meaning of a word, phrase, or sentence. ",
+                followUps: [ "How do we reduce NLP bias?"],
+            },
+             "How do we reduce NLP bias?": {
+                answer: "Steps to reduce NLP bias: 1) Curate and Audit the training data, 2) Bias detection tools, 3) debiasing word embeddings ",
+                
+            },
+
+            "What is sentiment analysis": {
                 answer: "Sentiment Analysis determines the emotional tone of text (positive, negative, neutral). It works by: 1) Preprocessing text (cleaning, tokenization), 2) Feature extraction (bag-of-words, TF-IDF, or word embeddings), 3) Classification using ML models (Naive Bayes, SVM, or deep learning), 4) Scoring sentiment polarity and intensity. Modern approaches use transformer models like BERT for better context understanding.",
                 followUps: ["What are the challenges in sentiment analysis?", "How accurate is sentiment analysis?", "What are sentiment analysis applications?"],
                 citations: "Reference: Module 2 - Sentiment Analysis Techniques"
@@ -399,7 +418,7 @@
                 </div>
             `;
         }
-
+       
         function generateDiagram(diagramType) {
             const diagrams = {
                 "ai_hierarchy": `
